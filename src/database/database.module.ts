@@ -6,18 +6,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        url: configService.get<string>('DATABASE_URL'),
+
+        host: config.get<string>('DATABASE_HOST'),
+        port: config.get<number>('DATABASE_PORT'),
+
+        username: config.get<string>('DATABASE_USER'),
+        password: config.get<string>('DATABASE_PASSWORD'),
+        database: config.get<string>('DATABASE_NAME'),
 
         autoLoadEntities: true,
-        synchronize: true,
 
-        ssl: {
-          rejectUnauthorized: false,
-        },
+        synchronize: true,
       }),
     }),
   ],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

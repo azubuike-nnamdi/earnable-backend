@@ -23,75 +23,125 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Earnable Backend** is a NestJS-powered API that takes a URL, scrapes the page content, and analyzes it for **monetization readiness**.
 
-## Project setup
+For a given URL, the system produces a structured analysis covering:
+
+- **Overview**: Key content areas, primary topics, content type, intent, credibility, authority, and monetization readiness.
+- **Revenue Gaps**: Missing or weak CTAs, product recommendations, comparisons, positioning for specific segments, and benefit-driven language.
+- **Additional Criteria**: Niche authority, practicality, specificity, audience alignment, and relatability.
+- **Recommendations**: Concrete, actionable suggestions to move the creator from current state to desired state.
+- **Content Opportunities**: New content topics, angles, and formats that build on what already performs well.
+- **Product Category Recommendations**: Categories of products or services that fit the audience; affiliate specifics can be layered on top.
+
+The backend is designed so that the frontend can optionally request numerical scores and percentages that can be turned into charts, or simply consume everything as text.
+
+## Tech Stack
+
+- **Framework**: [NestJS](https://nestjs.com/)
+- **Language**: TypeScript
+- **Database**: PostgreSQL (via TypeORM)
+- **Cache / Queues**: Redis / BullMQ
+- **AI / LLM**: OpenAI
+- **HTTP Client**: Axios
+
+## Getting Started
+
+### 1. Install dependencies
 
 ```bash
-$ pnpm install
+pnpm install
 ```
 
-## Compile and run the project
+### 2. Configure environment
+
+Create a `.env` file (or update the existing one) with:
+
+- **Server**
+  - `PORT`
+- **Database**
+  - `DATABASE_HOST`
+  - `DATABASE_PORT`
+  - `DATABASE_USER`
+  - `DATABASE_PASSWORD`
+  - `DATABASE_NAME`
+- **Redis**
+  - `REDIS_HOST`
+  - `REDIS_PORT`
+- **Auth**
+  - `JWT_ACCESS_SECRET`
+  - `JWT_REFRESH_SECRET`
+  - `JWT_ACCESS_EXPIRES`
+  - `JWT_REFRESH_EXPIRES`
+- **External APIs**
+  - `OPENAI_API_KEY`
+  - `FIRECRAWL_API_KEY`
+
+Never commit real secrets to version control.
+
+### 3. Run the project
 
 ```bash
 # development
-$ pnpm run start
+pnpm run start
 
-# watch mode
-$ pnpm run start:dev
+# watch mode (spins up Docker services if configured)
+pnpm run start:dev
 
-# production mode
-$ pnpm run start:prod
+# production mode (after building)
+pnpm run build
+pnpm run start:prod
 ```
 
-## Run tests
+### 4. Run tests
 
 ```bash
 # unit tests
-$ pnpm run test
+pnpm run test
 
 # e2e tests
-$ pnpm run test:e2e
+pnpm run test:e2e
 
 # test coverage
-$ pnpm run test:cov
+pnpm run test:cov
 ```
 
-## Deployment
+## High-Level API Overview
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+The backend exposes endpoints (via REST) that enable:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- **User authentication**
+  - Sign up, sign in, and JWT-based access/refresh tokens.
+- **URL-based content analysis**
+  - Accept a URL.
+  - Scrape the page content.
+  - Run the content through the Earnable analysis pipeline.
+  - Return a structured JSON response aligned with:
+    - Overview
+    - Revenue Gaps
+    - Additional Criteria
+    - Recommendations
+    - Content Opportunities
+    - Product Category Recommendations
 
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
+As the product evolves, more detailed endpoint documentation can be added using Swagger (already available via `@nestjs/swagger`).
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Development Notes
 
-## Resources
+- Core services and controllers should include **concise, high-signal comments** that explain:
+  - Intent of the class/service.
+  - Assumptions about inputs.
+  - Any non-obvious trade-offs or workflows.
+- Avoid comments that simply restate what the code already makes obvious.
 
-Check out a few resources that may come in handy when working with NestJS:
+## Contributing
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Contributions are welcome. Please read the [CONTRIBUTING.md](./CONTRIBUTING.md) guide for:
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Local development setup.
+- Code style and linting rules.
+- Testing expectations.
+- How to open effective pull requests.
 
 ## License
 

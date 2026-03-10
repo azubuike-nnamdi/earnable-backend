@@ -21,13 +21,13 @@ git clone <your-fork-url>
 cd earnable-backend
 ```
 
-3. **Install dependencies**:
+1. **Install dependencies**:
 
 ```bash
 pnpm install
 ```
 
-4. **Create your environment file**:
+1. **Create your environment file**:
 
 - Copy `.env` (or `.env.example` if available) and update the values to match your local setup:
   - Database: `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME`
@@ -35,7 +35,7 @@ pnpm install
   - Auth: `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRES`, `JWT_REFRESH_EXPIRES`
   - AI / scraping: `OPENAI_API_KEY`, `FIRECRAWL_API_KEY`
 
-5. **Run the development server**:
+1. **Run the development server**:
 
 ```bash
 pnpm run start:dev
@@ -118,4 +118,3 @@ If you are unsure about anything:
 - Create an **issue** describing the problem and your proposed solution.
 
 We appreciate your contributions to making Earnable more useful for creators and operators.
-

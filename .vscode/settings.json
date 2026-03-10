@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["bullmq", "trixie"],
+  "cSpell.words": ["bullmq", "jwtservice", "trixie", "userservice"],
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"

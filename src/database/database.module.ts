@@ -9,18 +9,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
 
-        host: config.get<string>('DATABASE_HOST'),
-        port: config.get<number>('DATABASE_PORT'),
+        host: config.getOrThrow<string>('DATABASE_HOST'),
+        port: config.getOrThrow<number>('DATABASE_PORT'),
 
-        username: config.get<string>('DATABASE_USER'),
-        password: config.get<string>('DATABASE_PASSWORD'),
-        database: config.get<string>('DATABASE_NAME'),
+        username: config.getOrThrow<string>('DATABASE_USER'),
+        password: config.getOrThrow<string>('DATABASE_PASSWORD'),
+        database: config.getOrThrow<string>('DATABASE_NAME'),
 
         autoLoadEntities: true,
-
-        synchronize: true,
+        synchronize: config.get<string>('NODE_ENV') === 'development',
+        migrationsRun: false,
+        migrations: ['dist/src/database/migrations/*.js'],
       }),
     }),
   ],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

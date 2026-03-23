@@ -14,7 +14,6 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
@@ -48,5 +47,13 @@ export class UsersService {
 
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
+  }
+
+  async setRefreshTokenHash(userId: string, refreshTokenHash: string): Promise<void> {
+    await this.usersRepository.update(userId, { refreshTokenHash });
+  }
+
+  async clearRefreshTokenHash(userId: string): Promise<void> {
+    await this.usersRepository.update(userId, { refreshTokenHash: null });
   }
 }

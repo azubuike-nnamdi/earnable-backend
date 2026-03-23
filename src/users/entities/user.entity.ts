@@ -23,14 +23,9 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  refreshToken?: string;
-
-  @Column({ nullable: true })
-  resetToken?: string;
-
-  @Column({ nullable: true })
-  resetTokenExpiry?: Date;
+  /** Bcrypt hash of the current refresh token for rotation validation. */
+  @Column({ type: 'varchar', nullable: true })
+  refreshTokenHash: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

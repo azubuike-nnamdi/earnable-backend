@@ -1,36 +1,51 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard/jwt-auth.guard';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Body, Controller, Delete, Get, NotFoundException, Patch, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { Request } from 'express';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import { toUserResponseDto } from './mappers/user.mapper';
 import { UsersService } from './users.service';
 
-@UseGuards(JwtAuthGuard)
+interface RequestWithUser extends Request {
+  user?: User;
+}
+
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @ApiOperation({ summary: 'Get current authenticated user profile' })
+  @Get('me')
+  me(@Req() req: RequestWithUser) {
+    const currentUser = req.user as User;
+    return toUserResponseDto(currentUser);
   }
 
+  @ApiOperation({ summary: 'List users (sanitized fields)' })
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users.map(toUserResponseDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  @ApiOperation({ summary: 'Update current authenticated user profile' })
+  @Patch('me')
+  async update(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
+    const currentUser = req.user as User;
+    const updated = await this.usersService.update(currentUser.id, updateUserDto);
+    if (!updated) {
+      throw new NotFoundException('User not found');
+    }
+    return toUserResponseDto(updated);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @ApiOperation({ summary: 'Delete current authenticated user account' })
+  @Delete('me')
+  async remove(@Req() req: RequestWithUser) {
+    const currentUser = req.user as User;
+    await this.usersService.remove(currentUser.id);
+    return { success: true };
   }
 }

@@ -23,7 +23,11 @@
 
 ## Description
 
-**Earnable Backend** is a NestJS-powered API that takes a URL, scrapes the page content, and analyzes it for **monetization readiness**.
+**Earnable Backend** is a NestJS-powered API for **content monetization intelligence**.  
+It now supports a production-style two-step flow:
+
+1. crawl and persist normalized page content
+2. analyze by saved ingestion id with enterprise-focused monetization guidance
 
 For a given URL, the system produces a structured analysis covering:
 
@@ -42,7 +46,7 @@ The backend is designed so that the frontend can optionally request numerical sc
 - **Language**: TypeScript
 - **Database**: PostgreSQL (via TypeORM)
 - **Cache / Queues**: Redis / BullMQ
-- **AI / LLM**: OpenAI
+- **AI / LLM**: Ollama (primary), OpenAI (fallback)
 - **HTTP Client**: Axios
 
 ## Getting Started
@@ -76,8 +80,17 @@ Create a `.env` file (or update the existing one) with:
 - **External APIs**
   - `OPENAI_API_KEY`
   - `FIRECRAWL_API_KEY`
+  - `INGESTION_ENABLED`
+  - `OLLAMA_MODEL`
+  - `LLM_TIMEOUT_MS`
 
 Never commit real secrets to version control.
+
+### Ollama runtime modes
+
+- **External Ollama (default)**: keep `OLLAMA_BASE_URL=http://localhost:11434` for local runs, and for Docker backend use `http://host.docker.internal:11434`.
+- **Compose-managed Ollama**: run `docker compose --profile ollama up --build` and set `OLLAMA_BASE_URL=http://ollama:11434` for the backend container.
+- **OpenAI fallback**: optional; set `OPENAI_API_KEY` so the LLM runner can fall back when primary Ollama calls fail.
 
 ### 3. Run the project
 
@@ -112,17 +125,19 @@ The backend exposes endpoints (via REST) that enable:
 
 - **User authentication**
   - Sign up, sign in, and JWT-based access/refresh tokens.
-- **URL-based content analysis**
-  - Accept a URL.
-  - Scrape the page content.
-  - Run the content through the Earnable analysis pipeline.
-  - Return a structured JSON response aligned with:
-    - Overview
-    - Revenue Gaps
-    - Additional Criteria
-    - Recommendations
-    - Content Opportunities
-    - Product Category Recommendations
+- **Crawl and persist content**
+  - `POST /ingestion/crawl`
+  - Input: URL
+  - Output: `ingestionId` + normalized crawl metadata
+
+- **Run enterprise analysis from saved crawl**
+  - `POST /analysis/run`
+  - Input: `ingestionId`
+  - Output: enterprise-focused monetization and positioning analysis
+
+- **LLM debug/ops endpoints**
+  - `POST /llm/smoke`
+  - `POST /llm/complete`
 
 As the product evolves, more detailed endpoint documentation can be added using Swagger (already available via `@nestjs/swagger`).
 
